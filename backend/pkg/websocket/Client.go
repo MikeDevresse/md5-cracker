@@ -40,7 +40,7 @@ func (c *Client) Read() {
 					c.Server.Searching.Client.mu.Lock()
 					c.Server.Searching.Client.Conn.WriteMessage(
 						websocket.TextMessage,
-						[]byte(string(p)),
+						p,
 					)
 					c.Server.Searching.Client.mu.Unlock()
 				}
