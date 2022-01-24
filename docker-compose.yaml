@@ -12,3 +12,5 @@ services:
     command: ws://go/ws
     deploy:
       replicas: 2
+    depends_on:
+      - go
