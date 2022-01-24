@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  go:
+    build:
+      context: "backend"
+    ports:
+      - "8080:80"
+
+  slave:
+    image: itytophile/hash-slave
+    command: ws://go/ws
+    deploy:
+      replicas: 2
