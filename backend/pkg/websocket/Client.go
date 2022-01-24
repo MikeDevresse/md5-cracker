@@ -80,6 +80,13 @@ func (c *Client) Read() {
 				}
 				c.mu.Unlock()
 
+			} else {
+				c.mu.Lock()
+				c.Conn.WriteMessage(
+					websocket.TextMessage,
+					[]byte(fmt.Sprintf("Command \"%v\" not found", message.Body)),
+				)
+				c.mu.Unlock()
 			}
 		}
 		fmt.Printf("Message Received: %+v\n", message)
