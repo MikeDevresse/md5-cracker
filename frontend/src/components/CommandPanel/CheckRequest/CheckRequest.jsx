@@ -29,8 +29,8 @@ class CheckRequest extends Component {
     render() {
         return (
             <Col xs={12} lg={6} className="checkRequest">
-                <Card className="card">
-                    <CardHeader>Send a crack request</CardHeader>
+                <Card>
+                    <Card.Header>Send a crack request</Card.Header>
                     <Card.Body>
                         <Form onSubmit={this.send}>
                             <Form.Group className="mb-2">

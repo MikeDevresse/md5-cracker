@@ -9,7 +9,9 @@ class App extends Component {
         super(props);
         this.state = {
             commandHistory: [],
-            resultHistory: []
+            resultHistory: [],
+            slaves: 0,
+            queue: 0
         }
     }
 
@@ -19,10 +21,18 @@ class App extends Component {
                 let msgSplit = msg.data.split(" ")
                 let state = {
                     commandHistory: [...this.state.commandHistory, {msg: msg.data, date: (new Date()).toLocaleString()}],
-                    resultHistory: this.state.resultHistory
+                    resultHistory: this.state.resultHistory,
+                    slaves: this.state.slaves,
+                    queue: this.state.queue
                 }
                 if(msgSplit[0] === "found" && msgSplit.length === 3) {
                     state.resultHistory = [...this.state.resultHistory, {hash: msgSplit[1], result: msgSplit[2]}]
+                }
+                if(msgSplit[0] === "slaves" && msgSplit.length === 2) {
+                    state.slaves = msgSplit[1]
+                }
+                if(msgSplit[0] === "queue" && msgSplit.length === 2) {
+                    state.queue = msgSplit[1]
                 }
 
                 return state

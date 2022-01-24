@@ -14,7 +14,7 @@ class ResultHistory extends Component {
         return (
             <Col xs={12} className="resultHistory">
                 <Card>
-                    <CardHeader className="card-header">Result History</CardHeader>
+                    <Card.Header className="card-header">Result History</Card.Header>
                     <Table className="mb-0">
                         <thead>
                         <tr>
