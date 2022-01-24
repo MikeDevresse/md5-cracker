@@ -48,4 +48,4 @@ jobs:
     - name: Test
       run: |
         cd frontend
-        yarn test
+        yarn test -- --watchAll=false
