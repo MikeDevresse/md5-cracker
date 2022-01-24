@@ -21,7 +21,6 @@ class App extends Component {
                     commandHistory: [...this.state.commandHistory, {msg: msg.data, date: (new Date()).toLocaleString()}],
                     resultHistory: this.state.resultHistory
                 }
-                console.log(msgSplit[0], msgSplit.length)
                 if(msgSplit[0] === "found" && msgSplit.length === 3) {
                     state.resultHistory = [...this.state.resultHistory, {hash: msgSplit[1], result: msgSplit[2]}]
                 }
