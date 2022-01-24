@@ -18,11 +18,6 @@ type Client struct {
 	mu      sync.Mutex
 }
 
-type Message struct {
-	Type int    `json:"type"`
-	Body string `json:"body"`
-}
-
 func (c *Client) Read() {
 	defer func() {
 		c.Pool.Unregister <- c
@@ -30,15 +25,14 @@ func (c *Client) Read() {
 	}()
 
 	for {
-		messageType, p, err := c.Conn.ReadMessage()
+		_, p, err := c.Conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		message := Message{Type: messageType, Body: string(p)}
-		commandDetails := strings.Split(message.Body, " ")
-		log.Println("Received ", message.Body, c.IsSlave)
+		commandDetails := strings.Split(string(p), " ")
+		log.Println("Received ", string(p), c.IsSlave)
 		if c.IsSlave {
 			if commandDetails[0] == "found" && len(commandDetails) == 3 {
 				for slave := range c.Server.SlavePool.Clients {
@@ -53,7 +47,7 @@ func (c *Client) Read() {
 					c.Server.Searching.Client.mu.Lock()
 					c.Server.Searching.Client.Conn.WriteMessage(
 						websocket.TextMessage,
-						[]byte(message.Body),
+						[]byte(string(p)),
 					)
 					c.Server.Searching.Client.mu.Unlock()
 				}
@@ -84,11 +78,10 @@ func (c *Client) Read() {
 				c.mu.Lock()
 				c.Conn.WriteMessage(
 					websocket.TextMessage,
-					[]byte(fmt.Sprintf("Command \"%v\" not found", message.Body)),
+					[]byte(fmt.Sprintf("Command \"%v\" not found", string(p))),
 				)
 				c.mu.Unlock()
 			}
 		}
-		fmt.Printf("Message Received: %+v\n", message)
 	}
 }

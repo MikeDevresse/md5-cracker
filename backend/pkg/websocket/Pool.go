@@ -6,7 +6,7 @@ type Pool struct {
 	Register   chan *Client
 	Unregister chan *Client
 	Clients    map[*Client]bool
-	Broadcast  chan Message
+	Broadcast  chan string
 }
 
 func NewPool() *Pool {
@@ -14,7 +14,7 @@ func NewPool() *Pool {
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
 		Clients:    make(map[*Client]bool),
-		Broadcast:  make(chan Message),
+		Broadcast:  make(chan string),
 	}
 }
 
