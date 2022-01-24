@@ -1,0 +1,12 @@
+.resultHistory {
+  width: 100%;
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-style: hidden;
+
+    th, td {
+      border: 2px solid lightgray;
+    }
+  }
+}
