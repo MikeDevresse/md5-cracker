@@ -1,0 +1,16 @@
+.commandInput  {
+  width: 100%;
+
+  input {
+    padding: 10px;
+    margin: 0;
+    font-size: 16px;
+    border: none;
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    width: 98%;
+    box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.1);
+    background-color: rgba(0,0,0,0);
+  }
+}

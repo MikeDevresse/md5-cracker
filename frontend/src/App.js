@@ -1,9 +1,8 @@
-import './App.css';
+import './App.scss';
 import {Component} from "react";
-import {connect, sendMsg} from "./api";
-import Header from "./components/Header";
+import {connect} from "./api";
 import CommandHistory from "./components/CommandHistory";
-import CommandInput from "./components/CommandInput";
+import CommandPanel from "./components/CommandPanel";
 
 class App extends Component {
     constructor(props) {
@@ -15,27 +14,19 @@ class App extends Component {
 
     componentDidMount() {
         connect((msg) => {
-            console.log("New Message")
             this.setState(_ => ({
-                commandHistory: [...this.state.commandHistory, msg]
+                commandHistory: [...this.state.commandHistory, {msg: msg.data, date: (new Date()).toLocaleString()}]
             }))
-            console.log(this.state);
         });
-    }
-
-    send(event) {
-        if(event.keyCode === 13) {
-            sendMsg(event.target.value);
-            event.target.value = "";
-        }
     }
 
     render() {
         return (
             <div className="App">
-                <Header/>
-                <CommandHistory commandHistory={this.state.commandHistory} />
-                <CommandInput send={this.send} />
+                <div className="content">
+                    <CommandPanel />
+                    <CommandHistory commandHistory={this.state.commandHistory} />
+                </div>
             </div>
         );
     }

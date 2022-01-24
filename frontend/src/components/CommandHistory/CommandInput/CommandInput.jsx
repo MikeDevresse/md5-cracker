@@ -5,7 +5,7 @@ class CommandInput extends Component {
     render() {
         return (
             <div className="commandInput">
-                <input onKeyDown={this.props.send} />
+                <input onKeyDown={this.props.send} placeholder="Entrez une commande ..."/>
             </div>
         )
     }

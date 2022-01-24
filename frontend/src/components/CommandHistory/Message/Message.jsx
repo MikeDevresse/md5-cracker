@@ -4,14 +4,15 @@ import {Component} from "react";
 class Message extends Component {
     constructor(props) {
         super(props);
-        let temp = this.props.message;
-        this.state = {
-            message: temp
-        }
+        console.log(this.props)
+        this.state = this.props.message
     }
 
     render() {
-        return <div className="message">{this.state.message}</div>
+        return <div className="message">
+            <span className="date">{this.state.date}</span>
+            <span className="messageText">{this.state.msg}</span>
+        </div>
     }
 }
 
