@@ -9,7 +9,6 @@ let connect = callback => {
     };
 
     socket.onmessage = msg => {
-        console.log(msg);
         callback(msg);
     };
 
@@ -23,7 +22,6 @@ let connect = callback => {
 };
 
 let sendMsg = msg => {
-    console.log("sending msg: ", msg);
     socket.send(msg);
 };
 
