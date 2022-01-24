@@ -70,6 +70,7 @@ func (c *Client) Read() {
 						websocket.TextMessage,
 						[]byte(fmt.Sprintf("searching %v", commandDetails[1])),
 					)
+					c.Server.ClientPool.Broadcast <- fmt.Sprintf("queue %v", c.Server.Queue.Len())
 				} else {
 					c.Conn.WriteMessage(
 						websocket.TextMessage,
