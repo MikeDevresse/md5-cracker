@@ -3,7 +3,11 @@ version: "3.7"
 services:
   go:
     build:
-      context: "backend"
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: prod
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
     ports:
       - "8080:80"
 
