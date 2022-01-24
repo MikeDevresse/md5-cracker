@@ -3,10 +3,10 @@ package websocket
 import "fmt"
 
 type Pool struct {
-	Register   chan *Client
-	Unregister chan *Client
-	Clients    map[*Client]bool
-	Broadcast  chan string
+	Clients    map[*Client]bool // Client list
+	Register   chan *Client     // Adds the given Client to the Pool
+	Unregister chan *Client     // Delete a Client from the Pool
+	Broadcast  chan string      // Sends a message to all Client in the Pool
 }
 
 func NewPool() *Pool {
@@ -18,24 +18,23 @@ func NewPool() *Pool {
 	}
 }
 
+// Start Function that handle given command from a Pool
 func (pool *Pool) Start() {
 	for {
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
-			fmt.Println("New user joined, size of connection pool: ", len(pool.Clients))
-			break
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
-			fmt.Println("User disconnected, size of connection pool: ", len(pool.Clients))
-			break
 		case message := <-pool.Broadcast:
-			fmt.Println("Sending messsage to all clients in Pool")
 			for client := range pool.Clients {
+				client.mu.Lock()
 				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println(err)
+					client.mu.Unlock()
 					return
 				}
+				client.mu.Unlock()
 			}
 		}
 	}
