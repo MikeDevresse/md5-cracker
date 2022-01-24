@@ -18,6 +18,15 @@ type Client struct {
 	mu      sync.Mutex
 }
 
+func (c *Client) Write(msg string) {
+	c.mu.Lock()
+	c.Conn.WriteMessage(
+		websocket.TextMessage,
+		[]byte(msg),
+	)
+	c.mu.Unlock()
+}
+
 // Read function that will handle all message that have been sent by the user
 func (c *Client) Read() {
 	defer func() {
@@ -32,9 +41,6 @@ func (c *Client) Read() {
 			return
 		}
 
-		// Lock the message reading for preventing concurrency
-		c.mu.Lock()
-
 		// Split the command in an array to check part by part
 		commandDetails := strings.Split(string(p), " ")
 		log.Println("Received ", string(p), c.IsSlave)
@@ -43,15 +49,16 @@ func (c *Client) Read() {
 			// found hash response
 			// Tell that the hash has been found and give the response
 			if commandDetails[0] == "found" && len(commandDetails) == 3 {
-				// Tell the other slaves to stop
-				c.Server.SlavePool.Broadcast <- "stop"
+				// Tell the other slaves to stop (can't use broadcast otherwise sometimes the new search comes before than
+				// the stop one, and it gets stuck)
+				for slave := range c.Server.SlavePool.Clients {
+					slave.Write("stop")
+				}
 				// Sends the response to the concerned client
 				if c.Server.Searching != nil {
-					c.Server.Searching.Client.Conn.WriteMessage(
-						websocket.TextMessage,
-						p,
-					)
+					c.Server.Searching.Client.Write(string(p))
 				}
+				c.Server.ClientPool.Broadcast <- fmt.Sprintf("queue %v", c.Server.Queue.Len())
 				c.Server.Searching = nil
 			}
 		} else {
@@ -66,25 +73,15 @@ func (c *Client) Read() {
 						Client:  c,
 						Request: commandDetails[1],
 					})
-					c.Conn.WriteMessage(
-						websocket.TextMessage,
-						[]byte(fmt.Sprintf("searching %v", commandDetails[1])),
-					)
-					c.Server.ClientPool.Broadcast <- fmt.Sprintf("queue %v", c.Server.Queue.Len())
+					c.Server.ClientPool.Broadcast <- fmt.Sprintf("queue %v", c.Server.Queue.Len()+1)
+					c.Write(fmt.Sprintf("searching %v", commandDetails[1]))
 				} else {
-					c.Conn.WriteMessage(
-						websocket.TextMessage,
-						[]byte("Wrong hash given"),
-					)
+					c.Write("Wrong hash given")
 				}
 			} else {
 				// Warn the user if no command has been found
-				c.Conn.WriteMessage(
-					websocket.TextMessage,
-					[]byte(fmt.Sprintf("Command \"%v\" not found", string(p))),
-				)
+				c.Write(fmt.Sprintf("Command \"%v\" not found", string(p)))
 			}
 		}
-		c.mu.Unlock()
 	}
 }

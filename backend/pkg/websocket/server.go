@@ -4,7 +4,6 @@ import (
 	"container/list"
 	"fmt"
 	"github.com/MikeDevresse/md5-cracker/pkg/service"
-	"github.com/gorilla/websocket"
 	"log"
 )
 
@@ -47,12 +46,7 @@ func (server *Server) Start() {
 					service.Convert10to62(int(division)*(i+1)),
 				)
 				log.Println(req)
-				slave.mu.Lock()
-				slave.Conn.WriteMessage(
-					websocket.TextMessage,
-					[]byte(req),
-				)
-				slave.mu.Unlock()
+				slave.Write(req)
 				i = i + 1
 			}
 		}

@@ -1,7 +1,5 @@
 package websocket
 
-import "fmt"
-
 type Pool struct {
 	Clients    map[*Client]bool // Client list
 	Register   chan *Client     // Adds the given Client to the Pool
@@ -28,13 +26,7 @@ func (pool *Pool) Start() {
 			delete(pool.Clients, client)
 		case message := <-pool.Broadcast:
 			for client := range pool.Clients {
-				client.mu.Lock()
-				if err := client.Conn.WriteJSON(message); err != nil {
-					fmt.Println(err)
-					client.mu.Unlock()
-					return
-				}
-				client.mu.Unlock()
+				client.Write(message)
 			}
 		}
 	}

@@ -36,6 +36,7 @@ func setupRoutes() {
 		}
 
 		if string(p) == "slave" {
+			log.Println("new slave")
 			client := &websocket.Client{
 				Conn:    conn,
 				Pool:    server.SlavePool,
@@ -43,9 +44,12 @@ func setupRoutes() {
 				IsSlave: true,
 			}
 
+			// Since it is asynchronous we get better result by printing it before, otherwise we always get 1 less
+			server.ClientPool.Broadcast <- fmt.Sprintf("slaves %v", len(server.SlavePool.Clients)+1)
 			server.SlavePool.Register <- client
 			client.Read()
 		} else {
+			log.Println("new client")
 			client := &websocket.Client{
 				Conn:    conn,
 				Pool:    server.ClientPool,
@@ -54,6 +58,7 @@ func setupRoutes() {
 			}
 
 			server.ClientPool.Register <- client
+			client.Write(fmt.Sprintf("slaves %v", len(server.SlavePool.Clients)))
 			client.Read()
 		}
 	})
