@@ -2,7 +2,7 @@ FROM golang:1.17-alpine as build
 
 RUN mkdir /app
 
-ADD ./backend /app/
+COPY ./backend /app/
 
 WORKDIR /app
 
