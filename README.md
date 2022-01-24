@@ -1,1 +1,3 @@
-Docker-go
+[![Create and publish a Docker image](https://github.com/MikeDevresse/md5-cracker/actions/workflows/docker-image.yml/badge.svg)](https://github.com/MikeDevresse/md5-cracker/actions/workflows/docker-image.yml)
+[![Go build & tests](https://github.com/MikeDevresse/md5-cracker/actions/workflows/go.yml/badge.svg)](https://github.com/MikeDevresse/md5-cracker/actions/workflows/go.yml)
+[![React build & tests](https://github.com/MikeDevresse/md5-cracker/actions/workflows/react.yml/badge.svg)](https://github.com/MikeDevresse/md5-cracker/actions/workflows/react.yml)

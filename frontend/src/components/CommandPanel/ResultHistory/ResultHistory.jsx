@@ -1,7 +1,6 @@
 import "./ResultHistory.scss"
 import {Component} from "react";
 import {Card, Col, Table} from "react-bootstrap";
-import CardHeader from "react-bootstrap/CardHeader";
 
 class ResultHistory extends Component {
     keyCounter = 0;

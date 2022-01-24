@@ -2,7 +2,6 @@ import "./CheckRequest.scss"
 import {Component} from "react";
 import {sendMsg} from "../../../api";
 import {Button, Card, Col, Form} from "react-bootstrap";
-import CardHeader from "react-bootstrap/CardHeader";
 
 class CheckRequest extends Component {
     constructor(props) {
