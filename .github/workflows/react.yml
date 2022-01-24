@@ -1,5 +1,8 @@
 name: React build & tests
 
+env:
+  working-directory: ./frontend
+
 on:
   push:
     branches: [ main ]
@@ -13,8 +16,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: cd frontend
-
     - name: Use Node.js
       uses: actions/setup-node@v2
       with:
@@ -22,9 +23,11 @@ jobs:
         cache: 'yarn'
 
     - name: Install
+      working-directory: ${{env.working-directory}}
       run: yarn install
 
     - name: Build
+      working-directory: ${{env.working-directory}}
       run: yarn build
         
   test:
@@ -32,16 +35,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: cd frontend
-
     - name: Use Node.js
       uses: actions/setup-node@v2
       with:
         node-version: '14'
         cache: 'yarn'
+        cache-dependency-path: ${{env.working-directory}}/yarn.lock
 
     - name: Install
+      working-directory: ${{env.working-directory}}
       run: yarn install
 
     - name: Test
+      working-directory: ${{env.working-directory}}
       run: yarn test -- --watchAll=false
