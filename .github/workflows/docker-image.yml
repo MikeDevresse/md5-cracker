@@ -37,7 +37,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          image: ./backend/Dockerfile
+          file: ./backend/Dockerfile
+          target: prod
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
