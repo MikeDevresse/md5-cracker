@@ -35,14 +35,7 @@ func (c *Client) Read() {
 		log.Println("Received ", string(p), c.IsSlave)
 		if c.IsSlave {
 			if commandDetails[0] == "found" && len(commandDetails) == 3 {
-				for slave := range c.Server.SlavePool.Clients {
-					slave.mu.Lock()
-					slave.Conn.WriteMessage(
-						websocket.TextMessage,
-						[]byte("stop"),
-					)
-					slave.mu.Unlock()
-				}
+				c.Server.SlavePool.Broadcast <- "stop"
 				if c.Server.Searching != nil {
 					c.Server.Searching.Client.mu.Lock()
 					c.Server.Searching.Client.Conn.WriteMessage(
