@@ -21,6 +21,7 @@ jobs:
       with:
         node-version: '14'
         cache: 'yarn'
+        cache-dependency-path: ${{env.working-directory}}/yarn.lock
 
     - name: Install
       working-directory: ${{env.working-directory}}
