@@ -41,8 +41,14 @@ class App extends Component {
                     searching: this.state.searching,
                     consoleDeveloped: this.state.consoleDeveloped
                 }
-                if(msgSplit[0] === "found" && msgSplit.length === 3) {
-                    state.resultHistory = [...this.state.resultHistory, {hash: msgSplit[1], result: msgSplit[2]}]
+                if(msgSplit[0] === "found" && msgSplit.length === 6) {
+                    state.resultHistory = [{
+                        hash: msgSplit[1],
+                        result: msgSplit[2],
+                        requestedAt: new Date(parseInt(msgSplit[3])),
+                        startedAt: new Date(parseInt(msgSplit[4])),
+                        endedAt: new Date(parseInt(msgSplit[5]))
+                    }, ...this.state.resultHistory]
                 }
                 else if(msgSplit[0] === "slaves" && msgSplit.length === 4) {
                     state.slaves = msgSplit[1]
