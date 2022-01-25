@@ -11,6 +11,13 @@ services:
     ports:
       - "8080:80"
 
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - "80:80"
+
   slave:
     image: itytophile/hash-slave
     command: ws://go/ws
