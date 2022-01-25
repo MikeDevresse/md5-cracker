@@ -7,6 +7,18 @@ import {sendMsg} from "../../api";
 class CommandHistory extends Component {
     keyCounter = 0;
 
+    scrollToBottom = () => {
+        this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+    }
+
+    componentDidMount() {
+        this.scrollToBottom();
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom();
+    }
+
     send(event) {
         if(event.keyCode === 13) {
             sendMsg(event.target.value);
@@ -22,6 +34,9 @@ class CommandHistory extends Component {
                 <h2>Command History</h2>
                 <div className="commandHistoryList">
                     {messages}
+                    <div style={{ float:"left", clear: "both" }}
+                         ref={(el) => { this.messagesEnd = el; }}>
+                    </div>
                 </div>
                 <CommandInput send={this.send} />
             </div>
