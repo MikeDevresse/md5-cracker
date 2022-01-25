@@ -20,7 +20,7 @@ class CommandPanel extends Component {
                 <Row>
                     <CheckRequest/>
                     <Monitor state={this.props.state}/>
-                    <Configuration/>
+                    <Configuration slaves={this.props.state.slaves} maxSearch={this.props.state.maxSearch} maxSlavesPerRequest={this.props.state.maxSlavesPerRequest} />
                     <ResultHistory resultHistory={this.props.state.resultHistory}/>
                 </Row>
             </div>

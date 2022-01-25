@@ -7,14 +7,24 @@ class Configuration extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            maxSearch: '',
-            slaves: 0,
-            maxSlavesPerRequest: 0,
+            maxSearch: props.maxSearch,
+            slaves: props.slaves,
+            maxSlavesPerRequest: props.maxSlavesPerRequest,
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.setMaxSearch = this.setMaxSearch.bind(this);
         this.setSlaves = this.setSlaves.bind(this);
         this.setMaxSlavesPerRequest = this.setMaxSlavesPerRequest.bind(this);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps !== this.props) {
+            this.setState({
+                maxSearch: this.props.maxSearch,
+                slaves: this.props.slaves,
+                maxSlavesPerRequest: this.props.maxSlavesPerRequest,
+            })
+        }
     }
 
 
@@ -41,6 +51,11 @@ class Configuration extends Component {
     setMaxSlavesPerRequest(event) {
         event.preventDefault()
         sendMsg("max-slaves-per-request " + this.state.maxSlavesPerRequest)
+    }
+
+    stopAll(event) {
+        event.preventDefault()
+        sendMsg("stop-all")
     }
 
     render() {
@@ -99,7 +114,7 @@ class Configuration extends Component {
                             </td>
                         </tr>
                         <tr>
-                            <td colSpan="3"><Button variant="danger" className="w-100">STOP ALL</Button></td>
+                            <td colSpan="3"><Button variant="danger" className="w-100" onClick={this.stopAll}>STOP ALL</Button></td>
                         </tr>
                         </tbody>
                     </Table>
