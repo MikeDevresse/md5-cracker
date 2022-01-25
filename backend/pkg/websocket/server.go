@@ -2,8 +2,10 @@ package websocket
 
 import (
 	"container/list"
+	"context"
 	"fmt"
 	"github.com/MikeDevresse/md5-cracker/pkg/service"
+	"github.com/go-redis/redis/v8"
 	"log"
 	"os/exec"
 	"regexp"
@@ -20,9 +22,11 @@ type Server struct {
 	MaxSlavesPerRequest int
 	SlavesCount         int
 	AutoScale           bool
+	redis               *redis.Client
+	redisContext        context.Context
 }
 
-func NewServer() *Server {
+func NewServer(client *redis.Client) *Server {
 	return &Server{
 		Slaves:              make(map[*Client]bool),
 		AvailableSlaves:     make(map[*Client]bool),
@@ -33,6 +37,8 @@ func NewServer() *Server {
 		MaxSlavesPerRequest: 4,
 		SlavesCount:         0,
 		AutoScale:           false,
+		redis:               client,
+		redisContext:        context.Background(),
 	}
 }
 
@@ -103,6 +109,7 @@ func (server *Server) SetAutoScale(isAutoScale bool) {
 }
 
 func (server *Server) Found(request *SearchRequest, result string) {
+	server.redis.Set(server.redisContext, request.Hash, result, 0)
 	request.Result = result
 	request.EndedAt = time.Now()
 	request.Client.Write(fmt.Sprintf("found %v", request.FormatResponse()))

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/MikeDevresse/md5-cracker/pkg/websocket"
+	"github.com/go-redis/redis/v8"
 	"log"
 	"net/http"
 )
@@ -18,8 +19,15 @@ func main() {
 }
 
 func initWebsocket() {
-	server := websocket.NewServer()
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "redis:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	server := websocket.NewServer(rdb)
 	go server.Start()
+
 	clientCount := 0
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := websocket.Upgrade(w, r)

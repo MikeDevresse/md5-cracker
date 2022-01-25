@@ -2,12 +2,14 @@ package websocket
 
 import (
 	"fmt"
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
 	"log"
 	"regexp"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 type Client struct {
@@ -60,8 +62,15 @@ func (client *Client) Read() {
 			case command == "search" && len(messageSplit) == 2:
 				re := regexp.MustCompile("^[0-9a-fA-F]{32}$")
 				if re.MatchString(messageSplit[1]) {
-					client.Server.AddToQueue(NewSearchRequest(messageSplit[1], client))
-					client.Write(fmt.Sprintf("Added Hash %v to queue", messageSplit[1]))
+					val, err := client.Server.redis.Get(client.Server.redisContext, messageSplit[1]).Result()
+					if err == redis.Nil {
+						client.Server.AddToQueue(NewSearchRequest(messageSplit[1], client))
+						client.Write(fmt.Sprintf("Added Hash %v to queue", messageSplit[1]))
+					} else {
+						searchRequest := NewSearchRequest(messageSplit[1], client)
+						searchRequest.StartedAt = time.Now()
+						client.Server.Found(searchRequest, val)
+					}
 				} else {
 					client.Write("Wrong hash given")
 				}
