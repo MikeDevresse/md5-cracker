@@ -2,7 +2,7 @@ package websocket
 
 import (
 	"fmt"
-	"strings"
+	"strconv"
 	"time"
 )
 
@@ -25,9 +25,9 @@ func (searchRequest *SearchRequest) FormatResponse() string {
 		"%v %v %v %v %v",
 		searchRequest.Hash,
 		searchRequest.Result,
-		strings.ReplaceAll(searchRequest.RequestedAt.String(), " ", "_"),
-		strings.ReplaceAll(searchRequest.StartedAt.String(), " ", "_"),
-		strings.ReplaceAll(searchRequest.EndedAt.String(), " ", "_"),
+		strconv.FormatInt(searchRequest.RequestedAt.UnixMilli(), 10),
+		strconv.FormatInt(searchRequest.StartedAt.UnixMilli(), 10),
+		strconv.FormatInt(searchRequest.EndedAt.UnixMilli(), 10),
 	)
 }
 
