@@ -65,8 +65,17 @@ func (client *Client) Read() {
 				} else {
 					client.Write("Wrong hash given")
 				}
+			//
+			//	STOP-ALL
+			//
 			case command == "stop-all" && len(messageSplit) == 1:
 				client.Server.StopAll()
+			//
+			//	AUTO-SCALE
+			//
+			case command == "auto-scale" && len(messageSplit) == 2:
+				client.Server.SetAutoScale(messageSplit[1] == "true")
+				client.Server.PrintConfiguration(client)
 			//
 			//  MAX-SEARCH
 			//

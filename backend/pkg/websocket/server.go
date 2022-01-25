@@ -19,6 +19,7 @@ type Server struct {
 	MaxSearch           string
 	MaxSlavesPerRequest int
 	SlavesCount         int
+	AutoScale           bool
 }
 
 func NewServer() *Server {
@@ -31,6 +32,7 @@ func NewServer() *Server {
 		MaxSearch:           "9999",
 		MaxSlavesPerRequest: 4,
 		SlavesCount:         0,
+		AutoScale:           false,
 	}
 }
 
@@ -78,6 +80,7 @@ func (server *Server) PrintConfiguration(client *Client) {
 	client.Write(fmt.Sprintf("max-search %v", server.MaxSearch))
 	client.Write(fmt.Sprintf("slaves %v %v %v", len(server.Slaves), len(server.AvailableSlaves), len(server.Slaves)-len(server.AvailableSlaves)))
 	client.Write(fmt.Sprintf("max-slaves-per-request %v", server.MaxSlavesPerRequest))
+	client.Write(fmt.Sprintf("auto-scale %v", server.AutoScale))
 }
 
 func (server *Server) SetMaxSearch(maxSearch string) {
@@ -93,6 +96,10 @@ func (server *Server) SetMaxSlavesPerRequest(maxSlavesPerRequest int) {
 		return
 	}
 	server.MaxSlavesPerRequest = maxSlavesPerRequest
+}
+
+func (server *Server) SetAutoScale(isAutoScale bool) {
+	server.AutoScale = isAutoScale
 }
 
 func (server *Server) Found(request *SearchRequest, result string) {
@@ -137,6 +144,9 @@ func (server *Server) Scale(number int) error {
 
 func (server *Server) Start() {
 	for {
+		if server.AutoScale {
+			server.Scale(service.Min(16, server.MaxSlavesPerRequest*(server.Queue.Len()+1)))
+		}
 		if len(server.Slaves) > server.SlavesCount && len(server.AvailableSlaves) != 0 {
 			toDelete := len(server.Slaves) - server.SlavesCount
 			for slave := range server.AvailableSlaves {
