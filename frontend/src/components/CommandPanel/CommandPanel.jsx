@@ -2,7 +2,7 @@ import "./CommandPanel.scss"
 import {Component} from "react";
 import ResultHistory from "./ResultHistory";
 import CheckRequest from "./CheckRequest";
-import {Button, Container, Row} from "react-bootstrap";
+import {Button, Row} from "react-bootstrap";
 import Monitor from "./Monitor";
 import Configuration from "./Configuration";
 

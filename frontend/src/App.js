@@ -1,5 +1,5 @@
 import './App.scss';
-import {Component, useState} from "react";
+import {Component} from "react";
 import {connect} from "./api";
 import CommandHistory from "./components/CommandHistory";
 import CommandPanel from "./components/CommandPanel";
