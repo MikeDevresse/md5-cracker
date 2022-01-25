@@ -51,6 +51,7 @@ func initWebsocket() {
 				Server:     server,
 			}
 			server.AddClient(&client)
+			server.PrintConfiguration(&client)
 			log.Println("main.go", "New connection: client", client.String())
 			go client.Read()
 		}

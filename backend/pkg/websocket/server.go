@@ -6,23 +6,28 @@ import (
 	"github.com/MikeDevresse/md5-cracker/pkg/service"
 	"log"
 	"os/exec"
+	"regexp"
 )
 
 type Server struct {
-	Slaves          map[*Client]bool
-	AvailableSlaves map[*Client]bool
-	Clients         map[*Client]bool
-	Queue           *list.List
-	Searching       map[*SearchRequest]bool
+	Slaves              map[*Client]bool
+	AvailableSlaves     map[*Client]bool
+	Clients             map[*Client]bool
+	Queue               *list.List
+	Searching           map[*SearchRequest]bool
+	MaxSearch           string
+	MaxSlavesPerRequest int
 }
 
 func NewServer() *Server {
 	return &Server{
-		Slaves:          make(map[*Client]bool),
-		AvailableSlaves: make(map[*Client]bool),
-		Clients:         make(map[*Client]bool),
-		Queue:           list.New(),
-		Searching:       make(map[*SearchRequest]bool),
+		Slaves:              make(map[*Client]bool),
+		AvailableSlaves:     make(map[*Client]bool),
+		Clients:             make(map[*Client]bool),
+		Queue:               list.New(),
+		Searching:           make(map[*SearchRequest]bool),
+		MaxSearch:           "9999",
+		MaxSlavesPerRequest: 4,
 	}
 }
 
@@ -60,10 +65,31 @@ func (server *Server) BroadcastQueueStatus() {
 }
 
 func (server *Server) BroadcastSlaveStatus() {
-	message := fmt.Sprintf("slaves %v %v", len(server.AvailableSlaves), len(server.Slaves)-len(server.AvailableSlaves))
+	message := fmt.Sprintf("slaves %v %v %v", len(server.Slaves), len(server.AvailableSlaves), len(server.Slaves)-len(server.AvailableSlaves))
 	for client := range server.Clients {
 		client.Write(message)
 	}
+}
+
+func (server *Server) PrintConfiguration(client *Client) {
+	client.Write(fmt.Sprintf("max-search %v", server.MaxSearch))
+	client.Write(fmt.Sprintf("slaves %v %v %v", len(server.Slaves), len(server.AvailableSlaves), len(server.Slaves)-len(server.AvailableSlaves)))
+	client.Write(fmt.Sprintf("max-slaves-per-request %v", server.MaxSlavesPerRequest))
+}
+
+func (server *Server) SetMaxSearch(maxSearch string) {
+	re := regexp.MustCompile("^[9]{2,8}$")
+	if !re.MatchString(maxSearch) {
+		return
+	}
+	server.MaxSearch = maxSearch
+}
+
+func (server *Server) SetMaxSlavesPerRequest(maxSlavesPerRequest int) {
+	if maxSlavesPerRequest < 1 {
+		return
+	}
+	server.MaxSlavesPerRequest = maxSlavesPerRequest
 }
 
 func (server *Server) Found(request *SearchRequest, result string) {
@@ -73,6 +99,17 @@ func (server *Server) Found(request *SearchRequest, result string) {
 		slave.Write("stop")
 		server.AvailableSlaves[slave] = true
 	}
+	server.BroadcastQueueStatus()
+	server.BroadcastSlaveStatus()
+}
+
+func (server *Server) StopAll() {
+	for slave := range server.Slaves {
+		slave.Write("stop")
+		server.AvailableSlaves[slave] = true
+	}
+	server.Queue = list.New()
+	server.Searching = make(map[*SearchRequest]bool)
 	server.BroadcastQueueStatus()
 	server.BroadcastSlaveStatus()
 }
@@ -102,11 +139,11 @@ func (server *Server) Start() {
 			server.Searching[searchRequest] = true
 
 			// Get the amount of slaves that will be working for this request
-			maxSlavePerRequest := 4
+			maxSlavePerRequest := server.MaxSlavesPerRequest
 			slaveCount := service.Min(maxSlavePerRequest, len(server.AvailableSlaves))
 
 			// Number of possibility that will a slave calculate
-			division := float64(service.Convert62to10("9999")) / float64(slaveCount)
+			division := float64(service.Convert62to10(server.MaxSearch)) / float64(slaveCount)
 			i := 0
 			// Divide the task for each slave connected
 			toRemove := make([]*Client, 0)

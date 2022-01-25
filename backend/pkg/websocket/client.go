@@ -65,6 +65,33 @@ func (client *Client) Read() {
 				} else {
 					client.Write("Wrong hash given")
 				}
+			case command == "stop-all" && len(messageSplit) == 1:
+				client.Server.StopAll()
+			//
+			//  MAX-SEARCH
+			//
+			case command == "max-search" && len(messageSplit) == 2:
+				re := regexp.MustCompile("^[9]{2,8}$")
+				if re.MatchString(messageSplit[1]) {
+					client.Server.SetMaxSearch(messageSplit[1])
+					client.Server.PrintConfiguration(client)
+				} else {
+					client.Write("Wrong max-search argument, it must follow the regex: ^[9]{2,8}$")
+				}
+			//
+			//  MAX-SLAVES-PER-REQUEST
+			//
+			case command == "max-slaves-per-request" && len(messageSplit) == 2:
+				if value, err := strconv.Atoi(messageSplit[1]); err == nil {
+					if value < 1 {
+						client.Write("Please greater than 0")
+					} else {
+						client.Server.SetMaxSlavesPerRequest(value)
+						client.Server.PrintConfiguration(client)
+					}
+				} else {
+					client.Write("Please give a number as second argument")
+				}
 			//
 			//	SLAVES
 			//
