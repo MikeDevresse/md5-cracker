@@ -30,7 +30,7 @@ class CommandHistory extends Component {
         const messages = this.props.commandHistory.map(msg => <Message key={this.keyCounter++} message={msg} />);
 
         return (
-            <div className="commandHistory">
+            <div className={"commandHistory "+ (this.props.isDeveloped ? "" : "hide")}>
                 <h2>Command History</h2>
                 <div className="commandHistoryList">
                     {messages}

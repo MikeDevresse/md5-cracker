@@ -1,5 +1,5 @@
 import './App.scss';
-import {Component} from "react";
+import {Component, useState} from "react";
 import {connect} from "./api";
 import CommandHistory from "./components/CommandHistory";
 import CommandPanel from "./components/CommandPanel";
@@ -13,8 +13,13 @@ class App extends Component {
             slavesAvailable: 0,
             slavesWorking: 0,
             queue: 0,
-            searching: 0
+            searching: 0,
+            consoleDeveloped: true
         }
+    }
+
+    toggleConsole = () => {
+        this.setState({consoleDeveloped: !this.state.consoleDeveloped})
     }
 
     componentDidMount() {
@@ -27,7 +32,8 @@ class App extends Component {
                     slavesAvailable: this.state.slavesAvailable,
                     slavesWorking: this.state.slavesWorking,
                     queue: this.state.queue,
-                    searching: this.state.searching
+                    searching: this.state.searching,
+                    consoleDeveloped: this.state.consoleDeveloped
                 }
                 if(msgSplit[0] === "found" && msgSplit.length === 3) {
                     state.resultHistory = [...this.state.resultHistory, {hash: msgSplit[1], result: msgSplit[2]}]
@@ -50,8 +56,8 @@ class App extends Component {
         return (
             <div className="App">
                 <div className="content">
-                    <CommandPanel state={this.state} />
-                    <CommandHistory commandHistory={this.state.commandHistory} />
+                    <CommandPanel state={this.state} toggleConsole={this.toggleConsole} />
+                    <CommandHistory isDeveloped={this.state.consoleDeveloped} commandHistory={this.state.commandHistory} />
                 </div>
             </div>
         );

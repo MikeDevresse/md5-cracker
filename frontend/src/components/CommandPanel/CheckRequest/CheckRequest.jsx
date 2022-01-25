@@ -27,7 +27,7 @@ class CheckRequest extends Component {
 
     render() {
         return (
-            <Col xs={12} lg={6} className="checkRequest">
+            <Col xs={12} className="checkRequest">
                 <Card>
                     <Card.Header>Send a crack request</Card.Header>
                     <Card.Body>
