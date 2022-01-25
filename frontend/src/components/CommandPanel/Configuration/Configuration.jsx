@@ -1,28 +1,31 @@
 import "./Configuration.scss"
 import {Component} from "react";
-import {Button, Card, Col, FormControl, Table} from "react-bootstrap";
+import {Button, Card, Col, Form, FormControl, Table} from "react-bootstrap";
 import {sendMsg} from "../../../api";
 
 class Configuration extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            maxSearch: props.maxSearch,
-            slaves: props.slaves,
-            maxSlavesPerRequest: props.maxSlavesPerRequest,
+            maxSearch: props.state.maxSearch,
+            slaves: props.state.slaves,
+            maxSlavesPerRequest: props.state.maxSlavesPerRequest,
+            autoScale: props.state.autoScale
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.setMaxSearch = this.setMaxSearch.bind(this);
         this.setSlaves = this.setSlaves.bind(this);
         this.setMaxSlavesPerRequest = this.setMaxSlavesPerRequest.bind(this);
+        this.setAutoScale = this.setAutoScale.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps !== this.props) {
             this.setState({
-                maxSearch: this.props.maxSearch,
-                slaves: this.props.slaves,
-                maxSlavesPerRequest: this.props.maxSlavesPerRequest,
+                maxSearch: this.props.state.maxSearch,
+                slaves: this.props.state.slaves,
+                maxSlavesPerRequest: this.props.state.maxSlavesPerRequest,
+                autoScale: this.props.state.autoScale
             })
         }
     }
@@ -51,6 +54,11 @@ class Configuration extends Component {
     setMaxSlavesPerRequest(event) {
         event.preventDefault()
         sendMsg("max-slaves-per-request " + this.state.maxSlavesPerRequest)
+    }
+
+    setAutoScale(event) {
+        event.preventDefault()
+        sendMsg("auto-scale "+(this.state.autoScale?"true":"false"))
     }
 
     stopAll(event) {
@@ -109,6 +117,21 @@ class Configuration extends Component {
                             </td>
                             <td>
                                 <Button onClick={this.setMaxSlavesPerRequest}>
+                                    Update
+                                </Button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colSpan="2">
+                                <Form.Check
+                                    name="autoScale"
+                                    value={this.state.autoScale}
+                                    onChange={this.handleInputChange}
+                                    label="Auto scale"
+                                />
+                            </td>
+                            <td>
+                                <Button onClick={this.setAutoScale}>
                                     Update
                                 </Button>
                             </td>

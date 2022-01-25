@@ -15,6 +15,7 @@ class App extends Component {
             slavesWorking: 0,
             maxSearch: "",
             maxSlavesPerRequest: 0,
+            autoScale: false,
             queue: 0,
             searching: 0,
             consoleDeveloped: true
@@ -37,6 +38,7 @@ class App extends Component {
                     slavesWorking: this.state.slavesWorking,
                     maxSearch: this.state.maxSearch,
                     maxSlavesPerRequest: this.state.maxSlavesPerRequest,
+                    autoScale: this.state.autoScale,
                     queue: this.state.queue,
                     searching: this.state.searching,
                     consoleDeveloped: this.state.consoleDeveloped
@@ -65,7 +67,9 @@ class App extends Component {
                 else if(msgSplit[0] === "max-slaves-per-request" && msgSplit.length === 2) {
                     state.maxSlavesPerRequest = msgSplit[1]
                 }
-                console.log(state)
+                else if(msgSplit[0] === "auto-scale" && msgSplit.length === 2) {
+                    state.autoScale = msgSplit[1] === "true"
+                }
                 return state
             })
         });
