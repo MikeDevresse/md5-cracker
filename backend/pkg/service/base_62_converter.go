@@ -21,7 +21,7 @@ func Convert10to62(number int) string {
 func Convert62to10(number string) int {
 	sum := strings.Index(ALPHABET, string(number[0]))
 	base := len(ALPHABET)
-	for i := 0; i < len(number); i++ {
+	for i := 1; i < len(number); i++ {
 		sum = base*sum + strings.Index(ALPHABET, string(number[i]))
 	}
 	return sum

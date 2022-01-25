@@ -76,8 +76,6 @@ func (client *Client) Read() {
 						if err := client.Server.Scale(value); err != nil {
 							client.Write("An error occurred while trying to scale the application.")
 							log.Println("client.go", client, err)
-						} else {
-							client.Write("Scaling ...")
 						}
 					}
 				} else {
