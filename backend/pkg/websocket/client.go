@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
-	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -74,8 +73,7 @@ func (client *Client) Read() {
 					if value < 1 || value > 16 {
 						client.Write("Please send a value between 1 and 16")
 					} else {
-						cmd := exec.Command("docker-compose", "up", "-d", "--no-recreate", "--scale", fmt.Sprintf("slave=%v", value))
-						if err := cmd.Run(); err != nil {
+						if err := client.Server.Scale(value); err != nil {
 							client.Write("An error occurred while trying to scale the application.")
 							log.Println("client.go", client, err)
 						} else {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/MikeDevresse/md5-cracker/pkg/service"
 	"log"
+	"os/exec"
 )
 
 type Server struct {
@@ -74,6 +75,19 @@ func (server *Server) Found(request *SearchRequest, result string) {
 	}
 	server.BroadcastQueueStatus()
 	server.BroadcastSlaveStatus()
+}
+
+func (server *Server) Scale(number int) error {
+	if number < 0 {
+		number = 0
+	}
+	if number > 16 {
+		number = 16
+	}
+	cmd := exec.Command("docker-compose", "up", "-d", "--no-recreate", "--scale", fmt.Sprintf("slave=%v", number))
+	err := cmd.Run()
+
+	return err
 }
 
 func (server *Server) Start() {
