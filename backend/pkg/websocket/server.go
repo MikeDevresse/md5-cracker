@@ -17,6 +17,7 @@ type Server struct {
 	Searching           map[*SearchRequest]bool
 	MaxSearch           string
 	MaxSlavesPerRequest int
+	SlavesCount         int
 }
 
 func NewServer() *Server {
@@ -28,6 +29,7 @@ func NewServer() *Server {
 		Searching:           make(map[*SearchRequest]bool),
 		MaxSearch:           "9999",
 		MaxSlavesPerRequest: 4,
+		SlavesCount:         0,
 	}
 }
 
@@ -121,14 +123,29 @@ func (server *Server) Scale(number int) error {
 	if number > 16 {
 		number = 16
 	}
-	cmd := exec.Command("docker-compose", "up", "-d", "--no-recreate", "--scale", fmt.Sprintf("slave=%v", number))
-	err := cmd.Run()
+	server.SlavesCount = number
+	if len(server.Slaves) < server.SlavesCount {
+		cmd := exec.Command("docker-compose", "up", "-d", "--no-recreate", "--scale", fmt.Sprintf("slave=%v", number))
+		return cmd.Run()
+	}
 
-	return err
+	return nil
 }
 
 func (server *Server) Start() {
 	for {
+		if len(server.Slaves) > server.SlavesCount && len(server.AvailableSlaves) != 0 {
+			toDelete := len(server.Slaves) - server.SlavesCount
+			for slave := range server.AvailableSlaves {
+				slave.Write("exit")
+				delete(server.Slaves, slave)
+				delete(server.AvailableSlaves, slave)
+				toDelete--
+				if toDelete <= 0 {
+					break
+				}
+			}
+		}
 		if server.Queue.Len() != 0 && len(server.AvailableSlaves) != 0 {
 			// Dequeue the element
 			elem := server.Queue.Front()

@@ -22,6 +22,6 @@ services:
     image: itytophile/hash-slave
     command: ws://go/ws
     deploy:
-      replicas: 2
+      replicas: 0
     depends_on:
       - go
