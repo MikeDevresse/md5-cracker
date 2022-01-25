@@ -7,6 +7,7 @@ import (
 	"log"
 	"os/exec"
 	"regexp"
+	"time"
 )
 
 type Server struct {
@@ -95,7 +96,9 @@ func (server *Server) SetMaxSlavesPerRequest(maxSlavesPerRequest int) {
 }
 
 func (server *Server) Found(request *SearchRequest, result string) {
-	request.Client.Write(fmt.Sprintf("found %v %v", request.Hash, result))
+	request.Result = result
+	request.EndedAt = time.Now()
+	request.Client.Write(fmt.Sprintf("found %v", request.FormatResponse()))
 	delete(server.Searching, request)
 	for slave := range request.Slaves {
 		slave.Write("stop")
@@ -152,6 +155,7 @@ func (server *Server) Start() {
 			server.Queue.Remove(elem)
 			// Cast the element to SearchRequest
 			searchRequest := elem.Value.(*SearchRequest)
+			searchRequest.StartedAt = time.Now()
 			// Tells that we are currently searching for this
 			server.Searching[searchRequest] = true
 
