@@ -73,6 +73,7 @@ func (client *Client) Read() {
 					if value < 1 || value > 16 {
 						client.Write("Please send a value between 1 and 16")
 					} else {
+						client.Write("Scaling ...")
 						if err := client.Server.Scale(value); err != nil {
 							client.Write("An error occurred while trying to scale the application.")
 							log.Println("client.go", client, err)
