@@ -4,7 +4,7 @@ import (
 	"container/list"
 	"context"
 	"fmt"
-	"github.com/MikeDevresse/md5-cracker/pkg/service"
+	"github.com/MikeDevresse/md5-cracker/backend/pkg/service"
 	"github.com/go-redis/redis/v8"
 	"os/exec"
 	"regexp"

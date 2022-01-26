@@ -1,4 +1,4 @@
-module github.com/MikeDevresse/md5-cracker
+module github.com/MikeDevresse/md5-cracker/backend
 
 go 1.17
 

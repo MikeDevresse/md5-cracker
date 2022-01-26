@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/MikeDevresse/md5-cracker/pkg/websocket"
+	"github.com/MikeDevresse/md5-cracker/backend/pkg/websocket"
 	"github.com/go-redis/redis/v8"
 	"log"
 	"net/http"
