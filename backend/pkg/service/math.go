@@ -1,5 +1,6 @@
 package service
 
+// Min returns the minimum int from parameters
 func Min(vars ...int) int {
 	min := vars[0]
 

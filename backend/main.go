@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// main init the websocket and starts the webserver
 func main() {
 	port := 80
 	initWebsocket()
@@ -18,14 +19,13 @@ func main() {
 	}
 }
 
+// initWebsocket initialize the websocket route and the server
 func initWebsocket() {
-	rdb := redis.NewClient(&redis.Options{
+	server := websocket.NewServer(redis.NewClient(&redis.Options{
 		Addr:     "redis:6379",
 		Password: "",
 		DB:       0,
-	})
-
-	server := websocket.NewServer(rdb)
+	}))
 	go server.Start()
 
 	clientCount := 0
@@ -49,7 +49,6 @@ func initWebsocket() {
 				Server:     server,
 			}
 			server.AddSlave(&slave)
-			log.Println("main.go", "New connection: slave", slave.String())
 			go slave.Read()
 		} else {
 			client := websocket.Client{
@@ -60,7 +59,6 @@ func initWebsocket() {
 			}
 			server.AddClient(&client)
 			server.PrintConfiguration(&client)
-			log.Println("main.go", "New connection: client", client.String())
 			go client.Read()
 		}
 		clientCount++
