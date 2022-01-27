@@ -6,11 +6,13 @@ import (
 	"github.com/go-redis/redis/v8"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 // main init the websocket and starts the webserver
 func main() {
-	port := 80
+	port := getEnv("SERVER_PORT", "80")
 	initWebsocket()
 	log.Println("main.go", "Running webserver on port", port)
 	err := http.ListenAndServe(fmt.Sprintf(":%v", port), nil)
@@ -21,15 +23,20 @@ func main() {
 
 // initWebsocket initialize the websocket route and the server
 func initWebsocket() {
+	db, err := strconv.Atoi(getEnv("REDIS_DATABASE", "0"))
+	if err != nil {
+		log.Fatal("REDIS_DATABASE environment variable must be an integer")
+	}
 	server := websocket.NewServer(redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
-		Password: "",
-		DB:       0,
+		Addr:     getEnv("REDIS_HOST", "redis:6739"),
+		Password: getEnv("REDIS_PASSWORD", ""),
+		Username: getEnv("REDIS_USERNAME", ""),
+		DB:       db,
 	}))
 	go server.Start()
 
 	clientCount := 0
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(getEnv("SERVER_PATH", "80"), func(w http.ResponseWriter, r *http.Request) {
 		conn, err := websocket.Upgrade(w, r)
 		if err != nil {
 			fmt.Fprintf(w, "%+V\n", err)
@@ -63,4 +70,11 @@ func initWebsocket() {
 		}
 		clientCount++
 	})
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
