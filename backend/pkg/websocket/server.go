@@ -195,6 +195,8 @@ func (server *Server) Scale(number int) error {
 // Start Loop that will handle autoscaling, soft downscale, and queue handling
 func (server *Server) Start() {
 	for {
+		// Prevent the server to take full ressources
+		time.Sleep(10 * time.Millisecond)
 		// If we are on autoScale mode then we always want MaxSlavesPerRequest  slaves available for work with a maximum
 		//of 16 slaves
 		if server.AutoScale {
