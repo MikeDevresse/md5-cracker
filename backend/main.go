@@ -36,7 +36,7 @@ func initWebsocket() {
 	go server.Start()
 
 	clientCount := 0
-	http.HandleFunc(getEnv("SERVER_PATH", "80"), func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(getEnv("SERVER_PATH", "/ws"), func(w http.ResponseWriter, r *http.Request) {
 		conn, err := websocket.Upgrade(w, r)
 		if err != nil {
 			fmt.Fprintf(w, "%+V\n", err)
