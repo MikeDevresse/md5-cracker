@@ -2,8 +2,8 @@ package websocket
 
 import (
 	"fmt"
-	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -69,9 +69,10 @@ func (client *Client) Read() {
 					// Check that the requested hash is not already present in redis
 					val, err := client.Server.redis.Get(client.Server.redisContext, messageSplit[1]).Result()
 					client.Write(fmt.Sprintf("Added Hash %v to queue", messageSplit[1]))
-					if err == redis.Nil {
+					if err != nil {
 						client.Server.AddToQueue(NewSearchRequest(messageSplit[1], client))
 					} else {
+						log.Println(fmt.Sprintf("Found %v = %v through redis", messageSplit[1], client), err)
 						searchRequest := NewSearchRequest(messageSplit[1], client)
 						searchRequest.StartedAt = time.Now()
 						client.Server.Found(searchRequest, val)

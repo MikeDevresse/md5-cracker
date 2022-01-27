@@ -28,7 +28,7 @@ func initWebsocket() {
 		log.Fatal("REDIS_DATABASE environment variable must be an integer")
 	}
 	server := websocket.NewServer(redis.NewClient(&redis.Options{
-		Addr:     getEnv("REDIS_HOST", "redis:6739"),
+		Addr:     getEnv("REDIS_HOST", "redis:6379"),
 		Password: getEnv("REDIS_PASSWORD", ""),
 		Username: getEnv("REDIS_USERNAME", ""),
 		DB:       db,
