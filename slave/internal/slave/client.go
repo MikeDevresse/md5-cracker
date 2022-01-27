@@ -40,7 +40,6 @@ func (client *client) Start() {
 			client.mu.Lock()
 			client.conn.WriteMessage(websocket.TextMessage, []byte(message))
 			client.mu.Unlock()
-			log.Println("Done writing ", message)
 		}
 	}
 }
