@@ -1,7 +1,7 @@
 name: Slave build & tests
 
 env:
-  working-directory: ./frontend
+  working-directory: ./slave
 
 on:
   push:
