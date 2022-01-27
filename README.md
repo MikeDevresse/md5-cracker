@@ -1,36 +1,52 @@
 [![Create and publish a Docker image](https://github.com/MikeDevresse/md5-cracker/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/MikeDevresse/md5-cracker/actions/workflows/docker-image.yml)
 [![Go build & tests](https://github.com/MikeDevresse/md5-cracker/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/MikeDevresse/md5-cracker/actions/workflows/go.yml)
+[![Go build & tests](https://github.com/MikeDevresse/md5-cracker/actions/workflows/slave.yml/badge.svg?branch=main)](https://github.com/MikeDevresse/md5-cracker/actions/workflows/slave.yml)
 [![React build & tests](https://github.com/MikeDevresse/md5-cracker/actions/workflows/react.yml/badge.svg?branch=main)](https://github.com/MikeDevresse/md5-cracker/actions/workflows/react.yml)
 
 # MD5 Cracker
-
 - [MD5 Cracker](#md5-cracker)
     * [Usage](#usage)
         + [Docker compose](#docker-compose)
         + [Docker images](#docker-images)
-    * [Use the backend](#use-the-backend)
-        + [Init](#init)
+    * [Environment variables](#environment-variables)
+        + [Backend](#backend)
+            - [SERVER_PORT](#server-port)
+            - [SERVER_PATH](#server-path)
+            - [REDIS_HOST](#redis-host)
+            - [REDIS_USERNAME](#redis-username)
+            - [REDIS_PASSWORD](#redis-password)
+            - [REDIS_DATABASE](#redis-database)
+        + [Slave](#slave)
+            - [SLAVE_HOST](#slave-host)
+            - [SLAVE_PATH](#slave-path)
+    * [Use the slave](#use-the-slave)
         + [Requests](#requests)
             - [search](#search)
+            - [stop](#stop)
+            - [exit](#exit)
+        + [Responses](#responses)
+            - [found](#found)
+    * [Use the backend](#use-the-backend)
+        + [Init](#init)
+        + [Requests](#requests-1)
+            - [search](#search-1)
             - [stop-all](#stop-all)
             - [auto-scale](#auto-scale)
             - [max-search](#max-search)
             - [max-slaves-per-request](#max-slaves-per-request)
             - [slaves](#slaves)
-        + [Responses](#responses)
+        + [Responses](#responses-1)
             - [queue](#queue)
             - [slaves](#slaves-1)
             - [max-search](#max-search-1)
             - [max-slaves-per-request](#max-slaves-per-request-1)
             - [auto-scale](#auto-scale-1)
-            - [found](#found)
+            - [found](#found-1)
             - [Command commandName with numberOfArgs arguments not found](#command-commandname-with-numberofargs-arguments-not-found)
 
 This repository contains 2 projects: a backend written in Golang, and a frontend written with ReactJS. This project is a school project in order to learn how to use docker and scaling services in docker.
 The goal of this project is to have a backend that communicates with "slaves" that will bruteforce in order to find the given md5 hash. In order to do that we split an alphabet in the number of slave connected
 and tells to each slave what range of letters he should try.
-
-The [ityt/hash-slave](https://hub.docker.com/r/itytophile/hash-slave) is used for this project has the md5 cracker slave.
 
 ## Usage
 
@@ -42,11 +58,73 @@ A [docker-compose.yaml](https://github.com/MikeDevresse/md5-cracker/blob/main/do
 You will then be able to navigate to the frontend page at [127.0.0.1](http://127.0.0.1)
 
 ### Docker images
-This project has CI that generates two docker images, one for the frontend and one for the backend.
+This project has CI that generates three docker images, one for the frontend, one for the backend, and one for the slave.
+
+[Frontend Image](https://github.com/MikeDevresse/md5-cracker/pkgs/container/md5-cracker-frontend)
 
 [Backend Image](https://github.com/MikeDevresse/md5-cracker/pkgs/container/md5-cracker-backend)
 
-[Frontend Image](https://github.com/MikeDevresse/md5-cracker/pkgs/container/md5-cracker-frontend)
+[Slave Image](https://github.com/MikeDevresse/md5-cracker/pkgs/container/md5-cracker-slave)
+
+## Environment variables
+### Backend
+#### SERVER_PORT
+Port that the server should be running on, default is `80`
+#### SERVER_PATH
+Path or the route to the websocket, default is `/ws`
+#### REDIS_HOST
+Redis host with port, default is `redis:6379`
+#### REDIS_USERNAME
+Username used for redis, default is void
+#### REDIS_PASSWORD
+Password used for redis, default is void
+#### REDIS_DATABASE
+Database used for redis, must be an int, default is `0`
+
+### Slave
+#### SLAVE_HOST
+Host where the backend websocket is hosted to with port, default is `go`
+#### SLAVE_PATH
+Route where the websocket is, default is `/ws`
+
+## Use the slave
+You can use the slave for your project, for that pull the image
+
+`docker pull ghcr.io/mikedevresse/md5-cracker-slave:main`
+
+You can also use it in your docker compose:
+
+```yaml
+  slave:
+    image: "ghcr.io/mikedevresse/md5-cracker-slave:main"
+```
+and you can also add environment variables like this
+```yaml
+  slave:
+    image: "ghcr.io/mikedevresse/md5-cracker-slave:main"
+    environment:
+      SLAVE_HOST: "go"
+      SLAVE_PATH: "/ws"
+```
+
+### Requests
+#### search
+`seach hash begin end`
+
+Start the brute forcing from the begin parameter to the end one. It will only process the following regex ` [a-zA-Z0-9]+`
+#### stop
+`stop`
+
+Stop the slave from searching
+#### exit
+`exit`
+
+stop the slave process (os.Exit(0))
+### Responses
+#### found
+`found hash result`
+
+Sent when the slave has found the result
 
 ## Use the backend
 In order to use the backend itself you need to connect to the websocket, the port with the image is `80` but it is mapped to `8080` with the docker-compose.
