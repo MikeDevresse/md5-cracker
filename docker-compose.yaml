@@ -21,8 +21,7 @@ services:
       - "80:80"
 
   slave:
-    image: itytophile/hash-slave
-    command: ws://go/ws
+    image: "ghcr.io/mikedevresse/md5-cracker-slave:main"
     deploy:
       replicas: 0
     depends_on:
