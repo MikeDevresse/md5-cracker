@@ -7,14 +7,12 @@ COPY . /app
 WORKDIR /app
 
 RUN go mod download; \
-    CGO_ENABLED=0 go build -o main ./
+    go build -ldflags="-w -s" -o slave ./
 
 CMD ["/app/main"]
 
-FROM busybox AS prod
+FROM scratch AS prod
 
-RUN mkdir /app
-WORKDIR /app
-COPY --from=build /app/main ./
+COPY --from=build /app/slave ./
 
-CMD ["/app/main"]
+CMD ["/slave"]
