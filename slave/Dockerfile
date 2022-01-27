@@ -6,8 +6,10 @@ COPY . /app
 
 WORKDIR /app
 
-RUN go mod download; \
-    go build -ldflags="-w -s" -o slave ./
+RUN apk add binutils; \
+    go mod download; \
+    CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o slave ./; \
+    strip slave
 
 CMD ["/app/main"]
 
