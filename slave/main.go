@@ -18,7 +18,7 @@ func main() {
 		os.Exit(1)
 	}()
 
-	u := url.URL{Scheme: "ws", Host: "go:80", Path: "/ws"}
+	u := url.URL{Scheme: "ws", Host: getEnv("SLAVE_HOST", "go"), Path: getEnv("SLAVE_PATH", "/ws")}
 	log.Printf("connecting to %s", u.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
@@ -27,4 +27,11 @@ func main() {
 	}
 	client := slave.NewClient(c)
 	client.Start()
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
