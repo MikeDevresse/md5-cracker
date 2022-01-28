@@ -1,7 +1,6 @@
 import "./Configuration.scss"
 import {Component} from "react";
 import {Button, Card, Col, Form, FormControl, Table} from "react-bootstrap";
-import {sendMsg} from "../../../api";
 
 class Configuration extends Component {
     constructor(props) {
@@ -43,27 +42,27 @@ class Configuration extends Component {
 
     setMaxSearch(event) {
         event.preventDefault()
-        sendMsg("max-search " + this.state.maxSearch)
+        this.props.state.socket?.sendMsg("max-search " + this.state.maxSearch)
     }
 
     setSlaves(event) {
         event.preventDefault()
-        sendMsg("slaves " + this.state.slaves)
+        this.props.state.socket?.sendMsg("slaves " + this.state.slaves)
     }
 
     setMaxSlavesPerRequest(event) {
         event.preventDefault()
-        sendMsg("max-slaves-per-request " + this.state.maxSlavesPerRequest)
+        this.props.state.socket?.sendMsg("max-slaves-per-request " + this.state.maxSlavesPerRequest)
     }
 
     setAutoScale(event) {
         event.preventDefault()
-        sendMsg("auto-scale "+(this.state.autoScale?"true":"false"))
+        this.props.state.socket?.sendMsg("auto-scale "+(this.state.autoScale?"true":"false"))
     }
 
     stopAll(event) {
         event.preventDefault()
-        sendMsg("stop-all")
+        this.props.state.socket?.sendMsg("stop-all")
     }
 
     render() {

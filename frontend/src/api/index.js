@@ -1,32 +1,28 @@
-let socket = new WebSocket(
-    "ws://"+
-    (process.env.REACT_APP_BACKEND_URL ?? "localhost:8080") + "/"+
-    (process.env.REACT_APP_BACKEND_PATH ?? "ws")
-);
+class Socket {
+    constructor(url, callback) {
+        this.socket = new WebSocket(url)
 
-let connect = callback => {
-    console.log("connecting");
+        this.socket.onopen = () => {
+            console.log("Successfully Connected");
+            this.sendMsg("client")
+        };
 
-    socket.onopen = () => {
-        console.log("Successfully Connected");
-        sendMsg("client")
+        this.socket.onmessage = msg => {
+            callback(msg);
+        };
+
+        this.socket.onclose = event => {
+            console.log("Socket Closed Connection: ", event);
+        };
+
+        this.socket.onerror = error => {
+            console.log("Socket Error: ", error);
+        };
+    }
+
+    sendMsg = msg => {
+        this.socket.send(msg);
     };
+}
 
-    socket.onmessage = msg => {
-        callback(msg);
-    };
-
-    socket.onclose = event => {
-        console.log("Socket Closed Connection: ", event);
-    };
-
-    socket.onerror = error => {
-        console.log("Socket Error: ", error);
-    };
-};
-
-let sendMsg = msg => {
-    socket.send(msg);
-};
-
-export { connect, sendMsg };
+export default Socket;

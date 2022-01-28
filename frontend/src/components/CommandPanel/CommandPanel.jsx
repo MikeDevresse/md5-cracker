@@ -5,6 +5,7 @@ import CheckRequest from "./CheckRequest";
 import {Button, Row} from "react-bootstrap";
 import Monitor from "./Monitor";
 import Configuration from "./Configuration";
+import Websocket from "./Websocket";
 
 class CommandPanel extends Component {
     render() {
@@ -18,7 +19,8 @@ class CommandPanel extends Component {
                 </div>
 
                 <Row>
-                    <CheckRequest/>
+                    <Websocket socketConnector={this.props.socketConnector}/>
+                    <CheckRequest socket={this.props.state.socket}/>
                     <Monitor state={this.props.state}/>
                     <Configuration state={this.props.state} />
                     <ResultHistory resultHistory={this.props.state.resultHistory}/>

@@ -2,7 +2,6 @@ import "./CommandHistory.scss"
 import {Component} from "react";
 import Message from "./Message"
 import CommandInput from "./CommandInput";
-import {sendMsg} from "../../api";
 
 class CommandHistory extends Component {
     keyCounter = 0;
@@ -21,7 +20,7 @@ class CommandHistory extends Component {
 
     send(event) {
         if(event.keyCode === 13) {
-            sendMsg(event.target.value);
+            this.props.socket?.sendMsg(event.target.value);
             event.target.value = "";
         }
     }

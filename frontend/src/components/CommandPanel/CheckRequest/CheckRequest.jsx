@@ -1,6 +1,5 @@
 import "./CheckRequest.scss"
 import {Component} from "react";
-import {sendMsg} from "../../../api";
 import {Button, Card, Col, Form} from "react-bootstrap";
 
 class CheckRequest extends Component {
@@ -21,7 +20,7 @@ class CheckRequest extends Component {
 
     send(event) {
         event.preventDefault()
-        sendMsg("search "+this.state.hash)
+        this.props.socket?.sendMsg("search "+this.state.hash)
         this.setState({hash: ''})
     }
 
