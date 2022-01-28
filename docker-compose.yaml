@@ -17,6 +17,9 @@ services:
     build:
       context: .
       dockerfile: ./nginx/Dockerfile
+      args:
+        BACKEND_URL: "127.0.0.1:8080"
+        BACKEND_PATH: "/ws"
     ports:
       - "80:80"
 
