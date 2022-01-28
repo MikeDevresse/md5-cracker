@@ -1,3 +1,5 @@
+console.log(process.env)
+
 let socket = new WebSocket(
     "ws://"+
     (process.env.BACKEND_URL ?? "localhost:8080") + "/"+
