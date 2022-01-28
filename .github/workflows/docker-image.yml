@@ -9,6 +9,7 @@ env:
   BACKEND_IMAGE_NAME: ${{ github.repository }}-backend
   SLAVE_IMAGE_NAME: ${{ github.repository }}-slave
   FRONTEND_IMAGE_NAME: ${{ github.repository }}-frontend
+  FRONTEND_NGINX_IMAGE_NAME: ${{ github.repository }}-frontend-nginx
 
 jobs:
   build-and-push-backend-image:
@@ -105,6 +106,39 @@ jobs:
         with:
           context: ./frontend
           target: prod
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+
+  build-and-push-frontend-nginx-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.FRONTEND_NGINX_IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./nginx/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
