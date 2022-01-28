@@ -141,7 +141,7 @@ jobs:
           file: ./nginx/Dockerfile
           push: true
           build-args: |
-            BACKEND_URL="backend.test"
-            BACKEND_PATH="/ws"
+            BACKEND_URL=backend.test
+            BACKEND_PATH=/ws
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
