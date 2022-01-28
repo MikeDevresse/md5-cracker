@@ -1,3 +1,5 @@
+console.log(process.env)
+
 let socket = new WebSocket(
     "ws://"+
     (process.env.REACT_APP_BACKEND_URL ?? "localhost:8080") + "/"+
